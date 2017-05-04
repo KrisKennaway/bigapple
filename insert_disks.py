@@ -38,8 +38,15 @@ def main():
         print "(%d/%d:%d%%) %s" % (idx+1, num_disks, (idx+1)*100/num_disks, f)
         disk = bytearray(open(f, 'r').read())
 
-        if len(disk) < 140*1024:
-            print "Disk %s truncated (%d bytes)" % (len(disk))
+        length = len(disk)
+        if length < 140*1024:
+            print "Disk %s truncated (%d bytes)" % length
+            continue
+
+        if length % 256 != 0:
+            print "Disk length %d does not align to sector boundary" % length
+            continue
+
         boot1 = disk[:256]
 
         sha1 = hashlib.sha1(disk).hexdigest()
