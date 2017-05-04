@@ -1,0 +1,54 @@
+-- SQLite3 schema for storing metadata about Apple II disk images
+
+create table Disks (
+  -- Fully-qualified file path
+  path TEXT PRIMARY KEY,
+
+  -- Shorter human-readable name for disk
+  name TEXT,
+
+  -- SHA1 hash of data
+  sha1 TEXT NOT NULL,
+
+  - Optional disk contents
+  data BLOB,
+
+  boot1_sha1 TEXT,
+  FOREIGN KEY(boot1_sha1) REFERENCES boot1(sha1)
+);
+
+-- Boot1 is T$00S$00 and invoked by the Disk PROM
+create table Boot1 (
+  -- TODO: should also have a unique id to avoid repeatedly storing the same hash in Boot1Distances
+
+  -- Uniquely identified by sha1 hash of data
+  sha1 TEXT PRIMARY KEY,
+
+  -- Optional human readable name for boot1 object
+  name TEXT,
+
+  -- Other notes about this boot1 object
+  notes TEXT,
+
+  -- 256 bytes of binary object code
+  data BLOB NOT NULL,
+
+  -- Optional Disassembly of 6502 object code
+  asm TEXT
+);
+
+-- Levenshtein distance between pairs of boot1 images
+create table Boot1Distances (
+  -- References boot1.sha1
+  source TEXT,
+
+  -- References boot1.sha1
+  target TEXT,
+
+  -- Levenshtein distance between binary (base-2) sequences
+  distance INTEGER,
+
+  FOREIGN KEY(source) REFERENCES boot1(sha1),
+  FOREIGN KEY(target) REFERENCES boot1(sha1),
+  PRIMARY KEY (source, target)
+);
