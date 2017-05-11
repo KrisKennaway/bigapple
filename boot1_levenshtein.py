@@ -1,10 +1,9 @@
 import bitstring
+import datetime
 import heapq
 import multiprocessing
 import pylev
 import sqlite3
-import datetime
-import vmprof
 
 DB_PATH = '/tank/apple2/data/apple2.db'
 
